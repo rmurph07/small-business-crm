@@ -1,18 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://mechanicshopcrm-fff7703161a3.herokuapp.com/';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
+// Create an axios instance with the base URL
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+});
 
 export const fetchCustomers = async () => {
-  const response = await axios.get(`${API_BASE_URL}/customers`);
+  const response = await axiosInstance.get('/customers');
   return response.data;
 };
-
 
 export const fetchVehicles = async () => {
-  const response = await axios.get(`${API_BASE_URL}/vehicles`);
+  const response = await axiosInstance.get('/vehicles');
   return response.data;
 };
-// You can add more functions here for other operations, like:
-// export const addCustomer = async (customer) => { ... }
-// export const deleteCustomer = async (id) => { ... }
-// etc.
