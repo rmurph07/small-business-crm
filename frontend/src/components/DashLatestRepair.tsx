@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DefaultButton from "./DefaultButton";
 import { useNavigate } from "react-router-dom";
+import { fetchLatestRepair } from '../pages/api';
 
 interface Vehicle {
   vehicleId: number;
@@ -8,53 +9,43 @@ interface Vehicle {
   model: string;
   year: number;
   mileage: number;
+  licensePlate: string;
+  additionalNotes: string;
   state: string;
 }
 
 interface RepairWithVehicle {
   repairId: number;
   description: string;
-  startDate: string | null;
+  startDate: string; // JSON will send dates as strings (e.g., "2025-02-11")
+  endDate: string;
   cost: number;
   status: string;
   vehicle: Vehicle;
 }
 
-const DashLatestRepair = () => {
+const DashLatestRepair: React.FC = () => {
   const navigate = useNavigate();
-  const [latestRepair, setLatestRepair] = useState<RepairWithVehicle | null>(
-    null
-  );
+  const [latestRepair, setLatestRepair] = useState<RepairWithVehicle | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    const fetchLatestRepair = async () => {
-      // Update these values to your real credentials
-      const username = "admin";
-      const password = "password";
-      const basicAuth = `Basic ${btoa(`${username}:${password}`)}`;
-
+    const getLatestRepair = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(
-          "https://mechanicshopcrm-fff7703161a3.herokuapp.com/repairs/latest",
-          {
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: RepairWithVehicle = await response.json();
+        const data = await fetchLatestRepair();
+        console.log("Latest repair data:", data);
         setLatestRepair(data);
-      } catch (error) {
-        console.error("Fetching latest repair failed:", error);
+      } catch (err: any) {
+        console.error("Error fetching latest repair:", err);
+        setError("Failed to load latest repair");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchLatestRepair();
+    getLatestRepair();
   }, []);
 
   const onDealContainerClick = useCallback(() => {

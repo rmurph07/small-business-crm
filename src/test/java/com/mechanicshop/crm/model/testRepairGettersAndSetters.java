@@ -14,16 +14,16 @@ class RepairTest {
         Repair repair = new Repair();
         repair.setRepairId(1L);
         repair.setDescription("Fix engine");
-        repair.setStartDate(LocalDate.of(2023, 1, 1));
-        repair.setEndDate(LocalDate.of(2023, 1, 10));
+        repair.setStartDate("2023-02-11");
+        repair.setEndDate("2024-04-13");
         repair.setCost(new BigDecimal("499.99"));
         repair.setStatus("Completed");
 
         // Confirm that each setter correctly sets the value, which is retrievable by the getter
         assertEquals(1L, repair.getRepairId());
         assertEquals("Fix engine", repair.getDescription());
-        assertEquals(LocalDate.of(2023, 1, 1), repair.getStartDate());
-        assertEquals(LocalDate.of(2023, 1, 10), repair.getEndDate());
+        assertEquals("2023-02-11", repair.getStartDate());
+        assertEquals("2024-04-13", repair.getEndDate());
         assertEquals(0, new BigDecimal("499.99").compareTo(repair.getCost()));
         assertEquals("Completed", repair.getStatus());
 

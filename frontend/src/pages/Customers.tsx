@@ -11,6 +11,7 @@ import TableHeader from "../components/TableHeader";
 import CustomerRow from "../components/CustomerRow";
 import Sidebar from "../components/Sidebar";
 import MainHeader from "../components/MainHeader";
+import { fetchCustomers } from "./api"
 
 interface Customer {
   customerid: number;
@@ -25,42 +26,19 @@ const Customers: FunctionComponent = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
-
-  // Fetch customers when the component mounts
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const loadCustomers = async () => {
       setIsLoading(true);
       try {
-        const username = "admin"; // Your username
-        const password = "password"; // Your password
-        const basicAuth = btoa(`${username}:${password}`); // Encode username and password in base64
-
-        const response = await fetch(
-          "https://mechanicshopcrm-fff7703161a3.herokuapp.com/customers",
-          {
-            headers: {
-              Authorization: `Basic ${basicAuth}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        console.log("Fetched data:", data);
+        const data = await fetchCustomers();
         setCustomers(data);
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Error fetching customers:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchCustomers();
+    loadCustomers();
   }, []);
 
   return (

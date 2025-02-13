@@ -12,162 +12,108 @@ import CustomerVehicleCount from "../components/CustomerVehicleCount";
 import DashRecentCustomer from "../components/DashRecentCustomer";
 import Sidebar from "../components/Sidebar";
 import MainHeader from "../components/MainHeader";
-import { fetchCustomers } from "./api";
 import VehicleRow from "../components/VehicleRow";
+
+import {
+  fetchCustomers,
+  fetchVehicles,
+  fetchCustomersCount,
+  fetchVehiclesCount,
+} from "./api";
 
 interface Customer {
   customerid: number;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   phone: string;
   email: string;
+  address: string;
 }
 
 interface Vehicle {
-  vehicleId: number; // add elsewhere
-  customerid: number; // make work
+  vehicleId: number;
   make: string;
   model: string;
   year: number;
   mileage: number;
   licensePlate: string;
+  additionalNotes: string;
   state: string;
-  notes: string;
+  customer: Customer;  // Nested customer object
 }
 
 const Dashboard: FunctionComponent = () => {
   const navigate = useNavigate();
+
+  // State variables
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalVehicles, setTotalVehicles] = useState(0);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Correctly use process.env.REACT_APP_API_BASE_URL
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+  // Helper to RANDOMLY pick up to 7 from the array
+  const select8Customers = (allCustomers: Customer[]) => {
+    // Shallow copy the array to avoid mutating the original
+    const shuffled = [...allCustomers].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 7);
+  };
 
-  // Correctly declare username and password
-  const username = "admin";
-  const password = "password";
+  // Helper to RANDOMLY pick 4 vehicles
+  const select4Vehicles = (allVehicles: Vehicle[]) => {
+    const shuffled = [...allVehicles].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 4);
+  };
 
-  // Correctly assign basicAuth without duplicate 'const' and variable declaration
-  const basicAuth = `Basic ${btoa(`${username}:${password}`)}`; // Encode username and password in base64
-
-  const fetchTotalCustomers = async () => {
+  // Load total customers
+  const loadTotalCustomers = async () => {
     try {
-      const response = await fetch(
-        "https://mechanicshopcrm-fff7703161a3.herokuapp.com/customers/count",
-        {
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Assuming the API returns the count directly as a number
-      // If the structure is different, you will need to adjust how you extract the count
-      const totalCount = await response.json();
-      setTotalCustomers(totalCount);
+      const count = await fetchCustomersCount();
+      setTotalCustomers(count);
     } catch (error) {
-      console.error("Error fetching total customer count: ", error);
+      console.error("Error fetching total customer count:", error);
     }
   };
 
-  const fetchTotalVehicles = async () => {
+  // Load total vehicles
+  const loadTotalVehicles = async () => {
     try {
-      const response = await fetch(
-        "https://mechanicshopcrm-fff7703161a3.herokuapp.com/vehicles/count",
-        {
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Assuming the API returns the count directly as a number
-      // If the structure is different, you will need to adjust how you extract the count
-      const totalCount = await response.json();
-      setTotalVehicles(totalCount);
+      const count = await fetchVehiclesCount();
+      setTotalVehicles(count);
     } catch (error) {
-      console.error("Error fetching total customer count: ", error);
+      console.error("Error fetching total vehicle count:", error);
     }
   };
 
-  {
-    /* ITS ONLY USING 7 EVEN THO IT SAYS 8}*/
-  }
-  const select8Customers = (customers: any[]) => {
-    customers.sort(() => Math.random() - 0.5);
-    return customers.slice(0, 7);
-  };
-
-  const fetchCustomers = async () => {
+  // Load customers
+  const loadCustomers = async () => {
     try {
-      const response = await fetch(
-        "https://mechanicshopcrm-fff7703161a3.herokuapp.com/customers",
-        {
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      const eightCustomers = select8Customers(data);
-      console.log("Fetched data:", data);
-      setCustomers(eightCustomers);
+      const data = await fetchCustomers();
+      // pick 7 random
+      setCustomers(select8Customers(data));
     } catch (error) {
-      console.error("Error fetching data: ", error);
+      console.error("Error fetching customers:", error);
     }
   };
 
-  const selectVehicles = (vehicles: any[]) => {
-    vehicles.sort(() => Math.random() - 0.5);
-    return vehicles.slice(0, 4);
-  };
-
-  const fetchVehicles = async () => {
+  // Load vehicles
+  const loadVehicles = async () => {
     try {
-      const response = await fetch(
-        "https://mechanicshopcrm-fff7703161a3.herokuapp.com/vehicles",
-        {
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      const selectedVehicles = selectVehicles(data);
-      console.log("Fetched data:", data);
-      setVehicles(selectedVehicles);
+      const data = await fetchVehicles();
+      // pick 4 random
+      setVehicles(select4Vehicles(data));
     } catch (error) {
-      console.error("Error fetching data: ", error);
-    } finally {
+      console.error("Error fetching vehicles:", error);
     }
   };
 
+  // UseEffect to load everything on mount
   useEffect(() => {
-    fetchTotalCustomers();
-    fetchTotalVehicles();
-    fetchCustomers();
-    fetchVehicles();
+    setIsLoading(true);
+
+    // You can load them in parallel or individually
+    Promise.all([loadTotalCustomers(), loadTotalVehicles(), loadCustomers(), loadVehicles()])
+        .finally(() => setIsLoading(false));
   }, []);
 
   const onVehiclesClick = useCallback(() => {
@@ -252,8 +198,8 @@ const Dashboard: FunctionComponent = () => {
                 {customers.map((customer) => (
                   <DashRecentCustomer
                     customerid={customer.customerid}
-                    firstName={customer.firstName}
-                    lastName={customer.lastName}
+                    firstName={customer.firstname}
+                    lastName={customer.lastname}
                     phone={customer.phone}
                     email={customer.email}
                   />

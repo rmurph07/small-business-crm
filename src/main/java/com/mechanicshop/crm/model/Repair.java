@@ -3,8 +3,6 @@ package com.mechanicshop.crm.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-//import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +20,10 @@ public class Repair {
     private String description;
 
     @Column(name = "startDate")
-    @Temporal(TemporalType.DATE)
-    private LocalDate startDate;
+    private String startDate;
 
     @Column(name = "endDate")
-    @Temporal(TemporalType.DATE)
-    private LocalDate endDate;
+    private String endDate;
 
     @Column(name = "cost", nullable = false)
     private BigDecimal cost;
@@ -59,19 +55,19 @@ public class Repair {
         this.description = description;
     }
 
-    public LocalDate getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

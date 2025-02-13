@@ -2,9 +2,13 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 
-// Create an axios instance with the base URL
+// Create an axios instance with the base URL and basic auth
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
+  auth: {
+    username: 'admin',
+    password: 'password'
+  }
 });
 
 // Fetch all customers
@@ -29,4 +33,10 @@ export const fetchCustomersCount = async () => {
 export const fetchVehiclesCount = async () => {
   const response = await axiosInstance.get("/vehicles/count");
   return response.data; // assuming it's just a number
+};
+
+// Fetch the latest repair along with its vehicle details
+export const fetchLatestRepair = async () => {
+  const response = await axiosInstance.get("/repairs/latest");
+  return response.data;
 };

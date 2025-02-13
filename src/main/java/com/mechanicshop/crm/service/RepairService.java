@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service // Marks the class as a Spring service component
 public class RepairService {
@@ -54,39 +56,40 @@ public class RepairService {
 
     @Transactional(readOnly = true)
     public RepairWithVehicleDTO findLatestRepairWithVehicle() {
-        // Assuming that you want only one result with the latest start date and null end date.
-        // The PageRequest of size one will take care of that.
-        List<Repair> repairs = repairRepository.findLatestRepairWithNoEndDate(PageRequest.of(0, 1));
+        List<Repair> repairs = repairRepository.findLatestRepair(PageRequest.of(0, 1));
 
-        // If no repairs found, throw an exception
         if (repairs.isEmpty()) {
             throw new RuntimeException("No repairs found");
         }
 
-        // Get the first repair from the list, which should be the latest one due to the ordering in the repository method
         Repair repair = repairs.get(0);
-
-        Vehicle vehicle = repair.getVehicle();
+        Vehicle vehicle = repair.getVehicle(); // Should now be eagerly fetched
 
         // Map to DTO
         RepairWithVehicleDTO dto = new RepairWithVehicleDTO();
         dto.setRepairId(repair.getRepairId());
         dto.setDescription(repair.getDescription());
-        dto.setStartDate(repair.getStartDate());
+
+        // convert string date to LocalDate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        dto.setStartDate(repair.getStartDate() != null ? LocalDate.parse(repair.getStartDate(), formatter) : null);
+        dto.setEndDate(repair.getEndDate() != null ? LocalDate.parse(repair.getEndDate(), formatter) : null);
+
         dto.setCost(repair.getCost());
         dto.setStatus(repair.getStatus());
 
-        VehicleDTO vehicleDTO = new VehicleDTO();
-        vehicleDTO.setVehicleId(vehicle.getId());
-        vehicleDTO.setMake(vehicle.getMake());
-        vehicleDTO.setModel(vehicle.getModel());
-        vehicleDTO.setYear(vehicle.getYear());
-        vehicleDTO.setMileage(vehicle.getMileage());
-        vehicleDTO.setState(vehicle.getState());
-
-        dto.setVehicle(vehicleDTO);
+        // Map vehicle details
+        if (vehicle != null) {
+            VehicleDTO vehicleDTO = new VehicleDTO();
+            vehicleDTO.setVehicleId(vehicle.getVehicleId());
+            vehicleDTO.setMake(vehicle.getMake());
+            vehicleDTO.setModel(vehicle.getModel());
+            vehicleDTO.setYear(vehicle.getYear());
+            vehicleDTO.setMileage(vehicle.getMileage());
+            vehicleDTO.setState(vehicle.getState());
+            dto.setVehicle(vehicleDTO);
+        }
 
         return dto;
     }
-
 }

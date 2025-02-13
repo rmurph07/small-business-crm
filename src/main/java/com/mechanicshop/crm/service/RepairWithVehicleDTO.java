@@ -7,6 +7,7 @@ public class RepairWithVehicleDTO {
     private Long repairId;
     private String description;
     private LocalDate startDate;
+    private LocalDate endDate;
     private BigDecimal cost;
     private String status;
     private VehicleDTO vehicle;
@@ -41,6 +42,10 @@ public class RepairWithVehicleDTO {
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
+
+    public LocalDate getEndDate() { return endDate; }
+
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     public BigDecimal getCost() {
         return cost;
