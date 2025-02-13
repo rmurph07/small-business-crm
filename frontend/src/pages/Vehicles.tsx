@@ -15,59 +15,55 @@ import MainHeader from "../components/MainHeader";
 import DealRowIgnore from "../components/DealRowIgnore";
 import VehicleRow from "../components/VehicleRow";
 
+import {
+  fetchVehicles,
+} from "./api";
+
+interface Customer {
+  customerid: number;
+  firstname: string;
+  lastname: string;
+  phone: string;
+  email: string;
+  address: string;
+}
+
 interface Vehicle {
-  vehicleId: number; // add elsewhere
-  customerid: number; // make work
+  vehicleId: number;
   make: string;
   model: string;
   year: number;
   mileage: number;
   licensePlate: string;
+  additionalNotes: string;
   state: string;
-  notes: string;
+  customer: Customer;  // Nested customer object
 }
 
 const Vehicles: FunctionComponent = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL =
-      process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
-
-  // Fetch customers when the component mounts
   useEffect(() => {
-    const fetchVehicles = async () => {
+    const loadVehicles = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        const username = "admin"; // Your username
-        const password = "password"; // Your password
-        const basicAuth = btoa(`${username}:${password}`); // Encode username and password in base64
-
-        const response = await fetch(
-            "https://mechanicshopcrm-fff7703161a3.herokuapp.com/vehicles",
-            {
-              headers: {
-                Authorization: `Basic ${basicAuth}`,
-              },
-            }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        console.log("Fetched data:", data);
+        const data = await fetchVehicles();
+        console.log("Fetched Vehicles:", data);
         setVehicles(data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
+      } catch (err) {
+        console.error("Error fetching vehicles:", err);
+        setError("Failed to load vehicles.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVehicles();
+    loadVehicles();
   }, []);
+
 
   return (
       <div className="w-full relative bg-grey-grey-10 h-[910px] text-left text-base text-primary-navy font-heading-h5-bold">
@@ -86,7 +82,7 @@ const Vehicles: FunctionComponent = () => {
           <div className="self-stretch overflow-hidden flex flex-col items-center justify-start">
             <InfoAndFilters
                 totalInfoRowCount={`${vehicles.length}`}
-                customers="customers"
+                customers="Vehicles"
             />
             <div className="self-stretch rounded-xl overflow-hidden flex flex-col items-start justify-start py-0 px-6">
               <TableHeader
@@ -103,14 +99,14 @@ const Vehicles: FunctionComponent = () => {
                   vehicles.map((vehicle) => (
                       <VehicleRow
                           vehicleId={vehicle.vehicleId}
-                          customerid={vehicle.customerid}
+                          customerid={vehicle.customer ? vehicle.customer.customerid : undefined}
                           make={vehicle.make}
                           model={vehicle.model}
                           year={vehicle.year}
                           mileage={vehicle.mileage}
                           licensePlate={vehicle.licensePlate}
                           state={vehicle.state}
-                          notes={vehicle.notes}
+                          notes={vehicle.additionalNotes}
                       />
                   ))
               )}

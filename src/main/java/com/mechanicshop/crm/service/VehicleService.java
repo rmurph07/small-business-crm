@@ -24,7 +24,7 @@ public class VehicleService {
     }
 
     public List<Vehicle> getAllVehicles() {
-        return vehicleRepository.findAll();
+        return vehicleRepository.findAllWithCustomer();
     }
 
     public Optional<Vehicle> getVehicleById(Long id) {
