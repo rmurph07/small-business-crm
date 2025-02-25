@@ -33,42 +33,42 @@ const Sidebar: FunctionComponent = () => {
         baseTop="0px"
         baseAlignSelf="unset"
       />
-      <div className="absolute top-[20px] left-[calc(50%_-_25px)] flex flex-col items-start justify-start gap-[16px]">
-        <img
-          className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
-          alt=""
-          //src="/dashboardHighlight.svg" // Update if you have a different icon
-          src={
-            location.pathname === "/dashboard" || location.pathname === "/"
-              ? "/dashboardHighlight.svg"
-              : "/dashboard.svg"
-          }
-          onClick={onButtonIcon3Click}
-        />
-        <img
-          className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
-          alt=""
-          src={
-            location.pathname === "/vehicles" ||
-            location.pathname === "/vehicle-detail"
-              ? "/car-yellow.svg"
-              : "/car-svgrepo-com.svg"
-          }
-          onClick={onButtonIcon1Click}
-        />
-        <img
-          className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
-          alt=""
-          src={
-            location.pathname === "/customers" ||
-            location.pathname === "/customer-detail"
-              ? "/customerHighlight.svg"
-              : "/customer.svg"
-          }
-          onClick={onButtonIcon2Click}
-        />
-        {/* Add more buttons or elements as needed for your sidebar navigation */}
-      </div>
+        <div className="absolute top-[20px] left-[calc(50%_-_25px)] flex flex-col items-start justify-start gap-[16px]">
+            <img
+                className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
+                alt=""
+                //src="/dashboardHighlight.svg" // Update if you have a different icon
+                src={
+                    location.pathname === "/dashboard" || location.pathname === "/"
+                        ? "/dashboardHighlight.svg"
+                        : "/dashboard.svg"
+                }
+                onClick={onButtonIcon3Click}
+            />
+            <img
+                className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
+                alt=""
+                src={
+                    location.pathname === "/customers" ||
+                    location.pathname === "/customer-detail"
+                        ? "/customerHighlight.svg"
+                        : "/customer.svg"
+                }
+                onClick={onButtonIcon2Click}
+            />
+            <img
+                className="w-[50px] relative rounded-31xl h-[50px] overflow-hidden shrink-0 cursor-pointer"
+                alt=""
+                src={
+                    location.pathname === "/vehicles" ||
+                    location.pathname === "/vehicle-detail"
+                        ? "/car-yellow.svg"
+                        : "/car-svgrepo-com.svg"
+                }
+                onClick={onButtonIcon1Click}
+            />
+            {/* Add more buttons or elements as needed for your sidebar navigation */}
+        </div>
     </div>
   );
 };
