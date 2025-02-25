@@ -3,6 +3,7 @@ export type DefaultButtonType = {
   buttonText: string;
   onClick?: () => void; // Optional click handler
   type?: "button" | "submit" | "reset"; // Optional button type, with default
+  disabled?: boolean;
   // Existing style props
   DefaultButtonPosition?: CSSProperties["position"];
   DefaultButtonTop?: CSSProperties["top"];
@@ -21,6 +22,7 @@ const DefaultButton: FunctionComponent<DefaultButtonType> = ({
   buttonText,
   onClick, // Using the new onClick prop
   type = "button", // Setting a default type
+  disabled = false,
   // Destructuring all existing props
   DefaultButtonPosition,
   DefaultButtonTop,
@@ -68,6 +70,7 @@ const DefaultButton: FunctionComponent<DefaultButtonType> = ({
     <button
       type={type} // Applying the button type
       onClick={onClick} // Applying the onClick event handler
+      disabled={disabled}
       style={{...DefaultButtonStyle, ...buttonTextStyle}} // Merging the button styles with text styles
       className="hover:cursor-pointer rounded-xl overflow-hidden flex items-center justify-center py-2.5 px-6 text-sm font-bold border-[1px] border-solid"
     >

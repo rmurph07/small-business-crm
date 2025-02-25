@@ -17,6 +17,12 @@ export const fetchCustomers = async () => {
   return response.data;
 };
 
+// Add a new customer
+export const addCustomer = async (customerData) => {
+  const response = await axiosInstance.post("/customers", customerData);
+  return response.data;
+};
+
 // Fetch all vehicles
 export const fetchVehicles = async () => {
   const response = await axiosInstance.get("/vehicles");

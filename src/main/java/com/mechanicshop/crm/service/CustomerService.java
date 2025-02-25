@@ -21,6 +21,7 @@ public class CustomerService {
 
     // Saves a customer to the database
     public Customer saveCustomer(Customer customer) {
+        customer.setCustomerid(null);
         return customerRepository.save(customer);
     }
 

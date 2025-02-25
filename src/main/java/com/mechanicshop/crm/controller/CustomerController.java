@@ -43,19 +43,15 @@ public class CustomerController {
     // it will return the HTTP status code CREATED (201).
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Customer> addCustomer(@RequestBody String customerJson) {
-        logger.info("Received JSON for new customer: {}", customerJson);
+    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) {
+        logger.info("Received Customer: {}", customer);
         try {
-            Customer customer = new ObjectMapper().readValue(customerJson, Customer.class);
             Customer savedCustomer = customerService.saveCustomer(customer);
             logger.info("Customer added successfully: {}", savedCustomer);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
-        } catch (JsonProcessingException e) {
-            logger.error("Error parsing customer JSON: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
             logger.error("Error saving customer: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

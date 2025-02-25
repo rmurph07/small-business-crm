@@ -2,37 +2,49 @@ package com.mechanicshop.crm.model;
 
 // Necessary imports for JPA annotations and Java utilities
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.HashSet;
+import org.hibernate.annotations.GenericGenerator;
 
 // Marks this class as a JPA entity, meaning it will be mapped to a table in a database
 @Entity
-// Specifies the table name in the database that this entity will be mapped to
 @Table(name = "customers")
+@JsonIgnoreProperties(value = { "vehicles" })  // Ignore back-reference serialization issues
 public class Customer {
     // Specifies the primary key of the entity with auto-increment strategy
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "increment") // Uses Hibernate's increment strategy instead of SQLite's IDENTITY
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @JsonProperty("customerid")
     private Long customerid;
+
 
     // Marks the field as a column in the table with a not-null constraint
     @Column(nullable = false)
+    @JsonProperty("firstname")
     private String firstname;
 
     @Column(nullable = false)
+    @JsonProperty("lastname")
     private String lastname;
 
     // Similar to name, marks as a column that cannot be null
     @Column(nullable = false)
+    @JsonProperty("phone")
     private String phone;
 
     // Marks the email as a unique column, ensuring no two customers have the same email
     @Column(nullable = false, unique = true)
+    @JsonProperty("email")
     private String email;
 
     // Specifies a TEXT type column for longer strings, without a not-null constraint
     @Column(columnDefinition = "TEXT")
+    @JsonProperty("address")
     private String address;
 
     // Establishes a one-to-many relationship with the Vehicle entity
