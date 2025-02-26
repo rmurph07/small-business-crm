@@ -6,6 +6,7 @@ import AddNew from "./AddNew";
 import SelectCustomer from "./SelectCustomer";
 import AddNewCustomer from "./AddNewCustomer";
 import AddNewVehicle from "./AddNewVehicle";
+import selectCustomer from "./SelectCustomer";
 
 const getTitle = (pathname: string) => {
   if (pathname === "/dashboard" || pathname === "/") {
@@ -28,7 +29,8 @@ const getButton = (pathname: string) => {
     return "Add New Vehicle";
   } else if (pathname === "/customers") {
     return "Add New Customer";
-  } // We shouldnt include a button inn /customer-detail and /vehicle-detail because it seems unnecessary, there is already an edit button that can be used to change stuff
+  }
+  // We shouldn't include a button inn /customer-detail and /vehicle-detail because it seems unnecessary, there is already an edit button that can be used to change stuff
   // Return a default title if the pathname doesn't match any condition
   return "";
 };
@@ -37,6 +39,13 @@ const MainHeader: FunctionComponent = () => {
   const location = useLocation();
   const [title, setTitle] = useState("");
   const [buttonName, setButtonName] = useState("");
+
+
+  const [selectedCustomer, setSelectedCustomer] = useState<{
+    customerid: number;
+    firstName: string;
+    lastName: string
+  } | null>(null);
 
   // Popup toggle
   const [showPopup, setShowPopup] = useState(0);
@@ -133,17 +142,21 @@ const MainHeader: FunctionComponent = () => {
       {showPopup === 2 && (
         <div className={styles.popup}>
           <SelectCustomer
-            onChooseCustomer={() => setShowPopup(3)}
+            onChooseCustomer={(customer) => {
+              setSelectedCustomer(customer);
+              setShowPopup(3);
+            }}
             onAddCustomer={() => setShowPopup(4)}
             onClose={() => setShowPopup(0)}
           />
         </div>
       )}
-      {showPopup === 3 && (
+      {showPopup === 3 && selectedCustomer !== null && (
         <div className={styles.popup}>
           <AddNewVehicle
-            onChooseCustomer={() => setShowPopup(3)}
+            selectedCustomer={selectedCustomer}
             onClose={() => setShowPopup(0)}
+            onChooseCustomer={() => setShowPopup(2)}
           />
         </div>
       )}

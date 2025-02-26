@@ -4,7 +4,9 @@ package com.mechanicshop.crm.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 // Declares this class as an entity to be managed by JPA in the context of ORM
 @Entity
@@ -14,9 +16,9 @@ public class Vehicle {
 
     // Marks this field as the primary key of the entity
     @Id
-    // Configures the way the primary key is generated automatically by the database
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vehicleID", nullable = false)
+    @GeneratedValue(generator = "increment") // Uses Hibernate's increment strategy instead of SQLite's IDENTITY
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @JsonProperty("vehicleId")
     private Long vehicleId;
 
     // Specifies these fields as columns in the table, with a constraint that they cannot be null
