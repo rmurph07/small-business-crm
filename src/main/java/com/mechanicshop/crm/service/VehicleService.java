@@ -82,4 +82,6 @@ public class VehicleService {
     public long getVehiclesCount() {
         return vehicleRepository.count();
     }
+
+    public List<Vehicle> findByCustomer_Customerid(long customerId) { return vehicleRepository.findByCustomer_Customerid(customerId); }
 }

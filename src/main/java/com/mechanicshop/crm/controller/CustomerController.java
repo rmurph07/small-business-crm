@@ -55,9 +55,6 @@ public class CustomerController {
         }
     }
 
-
-
-
     // @GetMapping annotation is used to map HTTP GET requests onto the
     // specific handler method below.
 

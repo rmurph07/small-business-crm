@@ -72,4 +72,9 @@ public class VehicleController {
         long count = vehicleService.getVehiclesCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
+
+    @GetMapping("/customer/{customerId}")
+    public List<Vehicle> getVehiclesByCustomerId(@PathVariable Long customerId) {
+        return vehicleService.findByCustomer_Customerid(customerId);
+    }
 }

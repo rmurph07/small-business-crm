@@ -16,6 +16,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query("SELECT v FROM Vehicle v LEFT JOIN FETCH v.customer")
     List<Vehicle> findAllWithCustomer();
 
+    @Query("SELECT v FROM Vehicle v WHERE v.customer.customerid = :customerId")
+    List<Vehicle> findByCustomer_Customerid(Long customerId);
+
     // Method to find a vehicle by its license plate, returning an Optional
     Optional<Vehicle> findByLicensePlate(String licensePlate);
 

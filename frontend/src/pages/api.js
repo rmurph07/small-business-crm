@@ -52,3 +52,15 @@ export const fetchLatestRepair = async () => {
   const response = await axiosInstance.get("/repairs/latest");
   return response.data;
 };
+
+// Fetch a specific customer by ID
+export const fetchCustomerById = async (customerId) => {
+  const response = await axiosInstance.get(`/customers/${customerId}`);
+  return response.data;
+};
+
+// Fetch all vehicles for a specific customer
+export const fetchVehiclesByCustomerId = async (customerId) => {
+  const response = await axiosInstance.get(`/vehicles/customer/${customerId}`);
+  return response.data;
+};

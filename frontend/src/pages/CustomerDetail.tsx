@@ -1,349 +1,96 @@
-import { FunctionComponent, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { FunctionComponent, useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchCustomerById, fetchVehiclesByCustomerId } from "../pages/api"; // Use API functions
 import ScreenColumnsBG from "../components/ScreenColumnsBG";
-import LabelYes from "../components/LabelYes";
-import LabelNo from "../components/LabelNo";
-import Base from "../components/Base";
-import MainHeader from "../components/MainHeader";
 import Sidebar from "../components/Sidebar";
+import MainHeader from "../components/MainHeader";
 
 const CustomerDetail: FunctionComponent = () => {
-  const [isAlertCustomerSavedOpen, setAlertCustomerSavedOpen] = useState(false);
-  const [isAlertCustomerDeletedOpen, setAlertCustomerDeletedOpen] =
-    useState(false);
+  const { customerId } = useParams(); // Extract customerId from URL
   const navigate = useNavigate();
 
-  const onLogoClick = useCallback(() => {
-    navigate("/dashboard");
-  }, [navigate]);
+  const [customer, setCustomer] = useState<any>(null);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const openAlertCustomerSaved = useCallback(() => {
-    setAlertCustomerSavedOpen(true);
-  }, []);
+  useEffect(() => {
+    console.log("Extracted customerId:", customerId); // Debugging line
 
-  const closeAlertCustomerSaved = useCallback(() => {
-    setAlertCustomerSavedOpen(false);
-  }, []);
+    if (!customerId) {
+      setError("Invalid customer ID.");
+      setIsLoading(false);
+      return;
+    }
 
-  const openAlertCustomerDeleted = useCallback(() => {
-    setAlertCustomerDeletedOpen(true);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const customerData = await fetchCustomerById(customerId);
+        const customerVehicles = await fetchVehiclesByCustomerId(customerId);
 
-  const closeAlertCustomerDeleted = useCallback(() => {
-    setAlertCustomerDeletedOpen(false);
-  }, []);
+        setCustomer(customerData);
+        setVehicles(customerVehicles);
+      } catch (err) {
+        setError("Failed to fetch customer details.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const onButtonIconClick = useCallback(() => {
-    navigate("/add-new-vehicle");
-  }, [navigate]);
+    fetchData();
+  }, [customerId]);
 
-  const onDealRepeatLinkClick = useCallback(() => {
-    navigate("/vehicle-detail");
-  }, [navigate]);
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <>
-      <div
-          className="w-full relative bg-grey-grey-10 h-[910px] overflow-hidden text-left text-sm text-primary-white font-heading-h5-bold">
-        <ScreenColumnsBG
-            showRightArea
-            screenColumnsBGWidth="100%"
-            screenColumnsBGHeight="100%"
-            screenColumnsBGPosition="absolute"
-            screenColumnsBGTop="0px"
-            screenColumnsBGRight="0px"
-            screenColumnsBGBottom="0px"
-            screenColumnsBGLeft="0px"
-            rightAreaOverflow="hidden"
-        />
-        <div
-            className="absolute w-[calc(100%_-_90px)] top-[90px] right-[0px] left-[90px] flex flex-row items-start justify-start">
-          <div
-              className="flex-1 h-[670px] overflow-hidden flex flex-col items-center justify-start p-6 box-border gap-[24px]">
-            <div className="self-stretch relative rounded-xl h-[200px] overflow-hidden shrink-0">
-              <img
-                  className="absolute h-full w-full top-[0px] right-[0px] bottom-[0px] left-[0px] max-w-full overflow-hidden max-h-full object-cover"
-                  alt=""
-                  src="/cover@2x.png"
-              />
-              <div className="absolute top-[76px] left-[24px] w-[100px] h-[100px] overflow-hidden">
-                <div
-                    className="absolute h-full w-full top-[0px] right-[0px] bottom-[0px] left-[0px] rounded-31xl bg-primary-white overflow-hidden">
-                  <div
-                      className="absolute h-full w-full top-[0px] right-[0px] bottom-[0px] left-[0px] rounded-31xl bg-primary-white"/>
-                </div>
-                <img
-                    className="absolute right-[0px] bottom-[0px] rounded-[20px] w-8 h-8"
-                    alt=""
-                    src="/icon-wrapper.svg"
-                />
-                <div
-                    className="absolute h-full w-full top-[0px] right-[0px] bottom-[0px] left-[0px] overflow-hidden opacity-[0]"/>
+      <>
+        <div className="w-full relative bg-gray-100 min-h-screen overflow-hidden text-left text-sm text-primary-white font-heading-h5-bold">
+          <ScreenColumnsBG showRightArea />
+          <div className="absolute w-[calc(100%-90px)] top-[90px] right-0 left-[90px] flex flex-row items-start justify-start">
+            <div className="flex-1 min-h-[670px] flex flex-col items-center justify-start p-6 gap-6">
+
+              {/* Customer Information */}
+              <div className="w-full bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-2xl font-bold text-primary-navy">
+                  {customer.firstName} {customer.lastName}
+                </h2>
+                <p className="text-gray-600">Email: {customer.email}</p>
+                <p className="text-gray-600">Phone: {customer.phone}</p>
+                <p className="text-gray-600">
+                  Address: {customer.address}, {customer.city}, {customer.state} {customer.zipCode}
+                </p>
               </div>
-              <div
-                  className="absolute top-[calc(50%_+_24px)] right-[40px] rounded-51xl bg-primary-blue overflow-hidden hidden flex-row items-center justify-center py-2.5 pr-4 pl-5 gap-[12px] cursor-pointer"
-                  onClick={openAlertCustomerSaved}
-              >
-                <div className="relative leading-[30px] font-medium">
-                  Save Changes
-                </div>
-                <img className="w-5 relative h-5" alt="" src="/icon20.svg"/>
-              </div>
-              <img
-                  className="absolute top-[calc(50%_+_24px)] right-[40px] rounded-31xl w-[50px] h-[50px] overflow-hidden cursor-pointer"
-                  alt=""
-                  src="/button--delete-customer.svg"
-                  onClick={openAlertCustomerDeleted}
-              />
-            </div>
-            <div className="self-stretch overflow-hidden flex flex-col items-center justify-start gap-[24px]">
-              <div className="self-stretch flex flex-row items-start justify-start gap-[20px]">
-                <LabelYes
-                    label="First Name"
-                    icon="/icon11.svg"
-                    placeholder="Barbara"
-                    icon1="/icon21.svg"
-                    showIcon={false}
-                    showPlaceholder
-                    iconVisible={false}
-                    labelYesFlex="1"
-                    labelYesAlignSelf="unset"
-                    labelYesHeight="unset"
-                    labelAlignSelf="stretch"
-                    labelWidth="unset"
-                    inputHeight="unset"
-                    inputBackgroundColor="#eef6fb"
-                    placeholderFlex="1"
-                    placeholderWidth="unset"
-                />
-                <LabelYes
-                    label="Last Name"
-                    icon="/icon11.svg"
-                    placeholder="Anderson"
-                    icon1="/icon21.svg"
-                    showIcon={false}
-                    showPlaceholder
-                    iconVisible={false}
-                    labelYesFlex="1"
-                    labelYesAlignSelf="unset"
-                    labelYesHeight="unset"
-                    labelAlignSelf="stretch"
-                    labelWidth="unset"
-                    inputHeight="unset"
-                    inputBackgroundColor="#eef6fb"
-                    placeholderFlex="1"
-                    placeholderWidth="unset"
-                />
-              </div>
-              <div className="self-stretch flex flex-row items-start justify-start gap-[20px]">
-                <LabelYes
-                    label="Email"
-                    icon="/icon11.svg"
-                    placeholder="banderson@gmail.com"
-                    icon1="/icon21.svg"
-                    showIcon={false}
-                    showPlaceholder
-                    iconVisible={false}
-                    labelYesFlex="1"
-                    labelYesAlignSelf="unset"
-                    labelYesHeight="unset"
-                    labelAlignSelf="stretch"
-                    labelWidth="unset"
-                    inputHeight="unset"
-                    inputBackgroundColor="#eef6fb"
-                    placeholderFlex="1"
-                    placeholderWidth="unset"
-                />
-                <LabelYes
-                    label="Phone"
-                    icon="/icon11.svg"
-                    placeholder="310-685-3335"
-                    icon1="/icon21.svg"
-                    showIcon={false}
-                    showPlaceholder
-                    iconVisible={false}
-                    labelYesFlex="1"
-                    labelYesAlignSelf="unset"
-                    labelYesHeight="unset"
-                    labelAlignSelf="stretch"
-                    labelWidth="unset"
-                    inputHeight="unset"
-                    inputBackgroundColor="#eef6fb"
-                    placeholderFlex="1"
-                    placeholderWidth="unset"
-                />
-              </div>
-              <LabelYes
-                  label="Address"
-                  icon="/icon11.svg"
-                  placeholder="Street Address"
-                  icon1="/icon12.svg"
-                  showIcon={false}
-                  showPlaceholder
-                  iconVisible={false}
-                  labelYesFlex="unset"
-                  labelYesAlignSelf="stretch"
-                  labelYesHeight="unset"
-                  labelAlignSelf="stretch"
-                  labelWidth="unset"
-                  inputHeight="unset"
-                  inputBackgroundColor="#eef6fb"
-                  placeholderFlex="1"
-                  placeholderWidth="unset"
-              />
-              <div className="self-stretch flex flex-row items-start justify-start gap-[20px]">
-                <LabelNo
-                    icon="/icon11.svg"
-                    placeholder="City"
-                    icon1="/icon12.svg"
-                    showIcon={false}
-                    iconVisible={false}
-                    labelNoFlex="1"
-                    labelNoWidth="unset"
-                    labelNoAlignSelf="unset"
-                    labelNoBackgroundColor="#eef6fb"
-                    placeholderFlex="1"
-                />
-                <LabelNo
-                    icon="/icon11.svg"
-                    placeholder="State / Province"
-                    icon1="/icon12.svg"
-                    showIcon={false}
-                    iconVisible={false}
-                    labelNoFlex="unset"
-                    labelNoWidth="300px"
-                    labelNoAlignSelf="unset"
-                    labelNoBackgroundColor="#eef6fb"
-                    placeholderFlex="unset"
-                />
-                <LabelNo
-                    icon="/icon11.svg"
-                    placeholder="Zip Code"
-                    icon1="/icon12.svg"
-                    showIcon={false}
-                    iconVisible={false}
-                    labelNoFlex="unset"
-                    labelNoWidth="109px"
-                    labelNoAlignSelf="unset"
-                    labelNoBackgroundColor="#eef6fb"
-                    placeholderFlex="unset"
-                />
+
+              {/* Vehicles Section */}
+              <div className="w-full bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-bold text-primary-navy mb-4">Vehicles</h2>
+                {vehicles.length === 0 ? (
+                    <p className="text-gray-500">No vehicles registered.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {vehicles.map((vehicle) => (
+                          <div
+                              key={vehicle.id}
+                              className="bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
+                              onClick={() => navigate(`/vehicle-detail/${vehicle.id}`)}
+                          >
+                            <h4 className="text-lg font-semibold text-primary-navy">
+                              {vehicle.year} {vehicle.make} {vehicle.model}
+                            </h4>
+                            <p className="text-gray-600">Mileage: {vehicle.mileage} miles</p>
+                            <p className="text-gray-600">License Plate: {vehicle.licensePlate} ({vehicle.state})</p>
+                          </div>
+                      ))}
+                    </div>
+                )}
               </div>
             </div>
           </div>
-          <div className="w-[417px] bg-grey-grey-20 flex flex-col items-center justify-start text-lg text-primary-navy">
-            <div className="w-[417px] flex flex-col items-start justify-start gap-[4px]">
-              <div className="w-[417px] relative h-[78px] overflow-hidden shrink-0">
-                <b className="absolute top-[calc(50%_-_15px)] left-[24px] leading-[30px]">
-                  Recent Vehicles
-                </b>
-                <img
-                    className="absolute top-[calc(50%_-_20px)] right-[24px] rounded-31xl w-10 h-10 overflow-hidden cursor-pointer"
-                    alt=""
-                    src="/button16.svg"
-                    onClick={onButtonIconClick}
-                />
-              </div>
-              <div
-                  className="self-stretch flex flex-col items-start justify-start gap-[4px] text-base text-grey-grey-90">
-                <div
-                    className="self-stretch overflow-hidden flex flex-row items-center justify-start py-[9px] px-6 gap-[16px] cursor-pointer"
-                    onClick={onDealRepeatLinkClick}
-                >
-                  <div className="w-11 relative rounded-6xl bg-grey-grey-50 h-11 overflow-hidden shrink-0">
-                    <div
-                        className="absolute h-full w-full top-[0px] right-[0px] bottom-[0px] left-[0px] rounded-6xl bg-grey-grey-50"/>
-                  </div>
-                  <div className="flex-1 flex flex-col items-start justify-start">
-                    <div
-                        className="self-stretch h-[27px] overflow-hidden shrink-0 flex flex-row items-start justify-start gap-[5px]">
-                      <b className="relative leading-[27px]">2020</b>
-                      <b className="relative leading-[27px]">Mercedes-Benz</b>
-                      <b className="relative leading-[27px]">S550</b>
-                    </div>
-                    <div
-                        className="self-stretch h-[27px] overflow-hidden shrink-0 flex flex-row items-start justify-start gap-[12px] text-sm text-grey-grey-70">
-                      <div className="relative leading-[27px]">
-                        Nov 14, 09:00
-                      </div>
-                      <div className="relative leading-[27px]">•</div>
-                      <div className="flex flex-row items-start justify-start gap-[6px]">
-                        <div className="relative leading-[27px]">$</div>
-                        <div className="relative leading-[27px]">6000</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                    className="w-[417px] overflow-hidden flex flex-row items-center justify-start py-[9px] px-6 box-border gap-[16px]">
-                  <img
-                      className="w-11 relative rounded-6xl h-11 overflow-hidden shrink-0 object-cover"
-                      alt=""
-                      src="/image12@2x.png"
-                  />
-                  <div className="flex-1 flex flex-col items-start justify-start">
-                    <div className="flex flex-row items-start justify-start gap-[5px]">
-                      <b className="relative leading-[27px]">2015</b>
-                      <b className="relative leading-[27px]">Ford</b>
-                      <b className="relative leading-[27px]">Fusion</b>
-                    </div>
-                    <div
-                        className="self-stretch flex flex-row items-start justify-start gap-[12px] text-sm text-grey-grey-70">
-                      <div className="relative leading-[27px]">
-                        Nov 14, 09:00
-                      </div>
-                      <div className="relative leading-[27px]">•</div>
-                      <div className="flex flex-row items-start justify-start gap-[6px]">
-                        <div className="relative leading-[27px]">$</div>
-                        <div className="w-[158px] relative leading-[27px] inline-block shrink-0">
-                          6000
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                    className="w-[417px] overflow-hidden flex flex-row items-center justify-start py-[9px] px-6 box-border gap-[16px]">
-                  <img
-                      className="w-11 relative rounded-6xl h-11 overflow-hidden shrink-0 object-cover"
-                      alt=""
-                      src="/image13@2x.png"
-                  />
-                  <div className="flex-1 flex flex-col items-start justify-start">
-                    <div className="flex flex-row items-start justify-start gap-[5px]">
-                      <b className="relative leading-[27px]">2014</b>
-                      <b className="relative leading-[27px]">Toyota</b>
-                      <b className="relative leading-[27px]">Tacoma</b>
-                    </div>
-                    <div
-                        className="self-stretch flex flex-row items-start justify-start gap-[12px] text-sm text-grey-grey-70">
-                      <div className="relative leading-[27px]">
-                        Nov 14, 09:00
-                      </div>
-                      <div className="relative leading-[27px]">•</div>
-                      <div className="flex flex-row items-start justify-start gap-[6px]">
-                        <div className="relative leading-[27px]">$</div>
-                        <div className="w-[158px] relative leading-[27px] inline-block shrink-0">
-                          6000
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                    className="self-stretch overflow-hidden flex flex-row items-center justify-center py-[9px] pr-3.5 pl-6 text-right text-sm text-olive">
-                  <div className="relative leading-[30px] font-medium">
-                    Load More
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Sidebar />
+          <MainHeader />
         </div>
-        <Sidebar />
-        <MainHeader />
-      </div>
-    </>
+      </>
   );
 };
 

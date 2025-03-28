@@ -74,7 +74,7 @@ function App() {
       <Route path="/vehicles" element={<Vehicles />} />
       <Route path="/vehicle-detail/:vehicleId" element={<VehicleDetail />} />
       <Route path="/customers" element={<Customers />} />
-      <Route path="/customer-detail" element={<CustomerDetail />} />
+      <Route path="/customer-detail/:customerId" element={<CustomerDetail />} />
     </Routes>
   );
 }

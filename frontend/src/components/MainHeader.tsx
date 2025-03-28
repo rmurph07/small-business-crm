@@ -63,18 +63,21 @@ const MainHeader: FunctionComponent = () => {
   }, [navigate]);
 
   const handleButtonClick = () => {
-    switch (location.pathname) {
-      case "/dashboard":
+    switch (true) {
+      case location.pathname === "/dashboard":
         setShowPopup(1); // Show "Add New" popup
         break;
-      case "/vehicles":
+      case location.pathname === "/vehicles":
         setShowPopup(2); // Show "Add New Vehicle" popup
         break;
-      case "/customers":
+      case location.pathname === "/customers":
         setShowPopup(4); // Show "Add New Customer" popup
         break;
+      case /^\/customer-detail\/\d+$/.test(location.pathname): // Match "/customer-detail/{customerid}"
+        setShowPopup(5); // Show "Customer Detail" popup
+        break;
       default:
-        setShowPopup(0); // No popup
+        setShowPopup(1); // show "Add New" (needed so that it works on dashboard without being at /dashboard
     }
   };
   const closePopup = () => setShowPopup(0);
@@ -165,15 +168,24 @@ const MainHeader: FunctionComponent = () => {
           <AddNewCustomer onClose={() => setShowPopup(0)} />
         </div>
       )}
+      {showPopup === 5 && (
+          <div className={styles.popup}>
+            <AddNew
+                onChooseVehicle={() => setShowPopup(2)}
+                onChooseCustomer={() => setShowPopup(4)}
+                onClose={() => setShowPopup(0)}
+            />
+          </div>
+      )}
       <Base
-        baseWidth="100%"
-        basePosition="absolute"
-        baseRight="0px"
-        baseBottom="0px"
-        baseLeft="0px"
-        baseHeight="1px"
-        baseTop="unset"
-        baseAlignSelf="unset"
+          baseWidth="100%"
+          basePosition="absolute"
+          baseRight="0px"
+          baseBottom="0px"
+          baseLeft="0px"
+          baseHeight="1px"
+          baseTop="unset"
+          baseAlignSelf="unset"
       />
     </div>
   );
