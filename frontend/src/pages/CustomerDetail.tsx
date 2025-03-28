@@ -58,7 +58,7 @@ const CustomerDetail: FunctionComponent = () => {
                 <p className="text-gray-600">Email: {customer.email}</p>
                 <p className="text-gray-600">Phone: {customer.phone}</p>
                 <p className="text-gray-600">
-                  Address: {customer.address}, {customer.city}, {customer.state} {customer.zipCode}
+                  Address: {customer.address} {customer.city} {customer.state} {customer.zipCode}
                 </p>
               </div>
 
