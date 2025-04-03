@@ -64,3 +64,21 @@ export const fetchVehiclesByCustomerId = async (customerId) => {
   const response = await axiosInstance.get(`/vehicles/customer/${customerId}`);
   return response.data;
 };
+
+// Fetch vehicle details by ID
+export const fetchVehicleById = async (vehicleId) => {
+  const response = await axiosInstance.get(`/vehicles/${vehicleId}`);
+  return response.data;
+};
+
+// Fetch repairs for a vehicle by vehicleId
+export const fetchRepairsByVehicleId = async (vehicleId) => {
+  const response = await axiosInstance.get(`/repairs/vehicle/${vehicleId}`);
+  return response.data;
+};
+
+// Add a repair to a vehicle (this is only add repair function that should be used)
+export const addRepairToVehicle = async (vehicleId, repairData) => {
+  const response = await axiosInstance.post(`/repairs/vehicle/${vehicleId}`, repairData);
+  return response.data;
+};

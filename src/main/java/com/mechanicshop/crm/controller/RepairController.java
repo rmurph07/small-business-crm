@@ -1,8 +1,10 @@
 package com.mechanicshop.crm.controller;
 
 import com.mechanicshop.crm.model.Repair;
+import com.mechanicshop.crm.model.Vehicle;
 import com.mechanicshop.crm.service.RepairService;
 import com.mechanicshop.crm.service.RepairWithVehicleDTO;
+import com.mechanicshop.crm.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +22,29 @@ public class RepairController {
 
     // The RepairService dependency is automatically injected by Spring's dependency injection facilities.
     private final RepairService repairService;
+    private final VehicleService vehicleService;
 
     // Autowired's annotation is used to automatically inject the RepairService into this controller.
     @Autowired
-    public RepairController(RepairService repairService) {
+    public RepairController(RepairService repairService, VehicleService vehicleService) {
         this.repairService = repairService;
+        this.vehicleService = vehicleService;
     }
 
     // PostMapping annotation is used to map HTTP POST requests onto specific handler methods. Here it's used to create a new repair entry.
-    @PostMapping
-    // ResponseStatus annotation marks the method with the status code that should be returned. HttpStatus.CREATED corresponds to the 201 status code.
+    @PostMapping("/vehicle/{vehicleId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Repair addRepair(@RequestBody Repair repair) {
-        // Calls the saveRepair method of the repair service to save a repair and returns the saved Repair object.
-        return repairService.saveRepair(repair);
+    public Repair addRepairToVehicle(@PathVariable Long vehicleId, @RequestBody Repair repair) {
+        Vehicle vehicle = vehicleService.getVehicleById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found for ID: " + vehicleId));
+
+        repair.setVehicle(vehicle);
+
+        System.out.println("Saving repair: " + repair.getDescription() + ", Vehicle ID: " + vehicle.getVehicleId());
+        Repair savedRepair = repairService.saveRepair(repair);
+        System.out.println("Saved repair ID: " + savedRepair.getRepairId());
+
+        return savedRepair;
     }
 
     // GetMapping annotation is used to map HTTP GET requests onto specific handler methods. Here it's used to retrieve all repair entries.
@@ -59,6 +70,11 @@ public class RepairController {
         // TODO: Implement search functionality and service addition.
 
 
+    }
+
+    @GetMapping("/vehicle/{vehicleId}")
+    public List<Repair> getRepairsByVehicleId(@PathVariable Long vehicleId) {
+        return repairService.getRepairsByVehicleId(vehicleId);
     }
 
     // PutMapping annotation is used to map HTTP PUT requests onto specific handler methods. Here it's used to update an existing repair entry.

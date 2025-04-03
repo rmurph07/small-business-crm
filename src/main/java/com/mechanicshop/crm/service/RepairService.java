@@ -24,7 +24,8 @@ public class RepairService {
         this.repairRepository = repairRepository;
     }
 
-    // Saves or updates a Repair entity
+    // Saves a Repair entity
+    @Transactional
     public Repair saveRepair(Repair repair) {
         return repairRepository.save(repair);
     }
@@ -39,6 +40,10 @@ public class RepairService {
         return repairRepository.findById(id);
     }
 
+    // Get all repairs for a vehicle id
+    public List<Repair> getRepairsByVehicleId(Long vehicleId) {
+        return repairRepository.findByVehicle_VehicleId(vehicleId);
+    }
     // Updates a Repair entity's details
     public Repair updateRepair(Long id, Repair repairDetails) {
         Repair repair = repairRepository.findById(id)

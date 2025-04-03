@@ -19,7 +19,6 @@ public interface RepairRepository extends JpaRepository<Repair, Long> {
     @Query("SELECT r FROM Repair r JOIN FETCH r.vehicle WHERE r.startDate IS NOT NULL ORDER BY r.startDate DESC")
     List<Repair> findLatestRepair(Pageable pageable);
 
-
-
+    List<Repair> findByVehicle_VehicleId(Long vehicleId);
 
 }
