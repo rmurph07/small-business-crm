@@ -47,7 +47,7 @@ public class RepairService {
     // Updates a Repair entity's details
     public Repair updateRepair(Long id, Repair repairDetails) {
         Repair repair = repairRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Repair not found for this id :: " + id));
+                .orElseThrow(() -> new RuntimeException("Repair not found for ID: " + id));
         repair.setDescription(repairDetails.getDescription());
         repair.setStatus(repairDetails.getStatus());
         repair.setEndDate(repairDetails.getEndDate());  // Make sure to update endDate if it's being changed
@@ -55,7 +55,10 @@ public class RepairService {
     }
 
     // Deletes a Repair entity by its ID
+    @Transactional
     public void deleteRepair(Long id) {
+        Repair repair = repairRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Repair not found for ID: " + id));
         repairRepository.deleteById(id);
     }
 

@@ -82,3 +82,8 @@ export const addRepairToVehicle = async (vehicleId, repairData) => {
   const response = await axiosInstance.post(`/repairs/vehicle/${vehicleId}`, repairData);
   return response.data;
 };
+
+// Delete a repair by ID
+export const removeRepair = async (repairId) => {
+  await axiosInstance.delete(`/repairs/${repairId}`);
+};
